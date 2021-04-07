@@ -1,0 +1,10 @@
+.weather-icon {
+    content: url(../images/Weather-Track-Icon.png);
+    height: 30px;
+}
+
+.header-style {
+    display: inline-block;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
