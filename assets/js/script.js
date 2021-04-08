@@ -1,3 +1,5 @@
+var weatherKey = config.WEATHER_KEY;
+
 // Building the page by creating and appending elements
 const body = document.querySelector('body');
 const headerSection = document.querySelector('header');
@@ -75,14 +77,12 @@ footerSection.append(footerParagraph);
 
 let searchHistoryArray = [];
 
-const apiKey = '202043d5ec00ac7500baba67031e8d1e'; 
-
 // Functions
 function getWeatherApi(event) {
     event.preventDefault();
     let inputValue = searchInput.value;
     //searchInput.value = "";
-    let weatherRequestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputValue}&appid=${apiKey}&units=metric`;;
+    let weatherRequestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputValue}&appid=${weatherKey}&units=metric`;;
 
     fetch(weatherRequestUrl, {
         cache: "reload",
