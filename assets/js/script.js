@@ -84,82 +84,53 @@ function getWeatherApi(event) {
     //searchInput.value = "";
     let weatherRequestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputValue}&appid=${apiKey}&units=metric`;;
 
-    fetch(weatherRequestUrl)
+    fetch(weatherRequestUrl, {
+        cache: "reload",
+    })
     .then(response => response.json())
     .then(cityConditions => {
         console.log(cityConditions);
-        let { dt, main, name, weather, wind } = cityConditions;
+        let { coord, dt, main, name, sys, weather, wind } = cityConditions;
         let weatherIcon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weather[0]["icon"]}.svg`;
         let weatherStatus = weather[0]["description"];
-        let dateValue = moment(cityConditions.dt * 1000);       // Converting Unix timestamp to milliseconds and using moment.js to convert it to a date
+        let dateValue = moment(dt * 1000);       // Converting Unix timestamp to milliseconds and using moment.js to convert it to a date
         let currentDate = dateValue.format('D MMMM YYYY');  
-        let cityName = cityConditions.name;
-        let temperature = cityConditions.main.temp + " °C";
-        let humidity = cityConditions.main.humidity;
-        let windSpeed = cityConditions.wind.speed;
-        let currentLatitude = cityConditions.coord.lat;
-        let currentLongitutde = cityConditions.coord.lon;
+        let cityName = name;
+        let temperature = main.temp;
+        let humidity = main.humidity;
+        let windSpeed = wind.speed;
+        let currentLatitude = coord.lat;
+        let currentLongitutde = coord.lon;
 
         // Creating, appending and styling the TODAY'S WEATHER SECTION
         const todayWeatherSection = document.createElement('section');
-   
-        const todayWeatherHeader = document.createElement('h3');
-        const todayWeatherArticle = document.createElement('article');
-        const todayWeatherTemperatureContainer = document.createElement('div');
-        const todayWeatherTemperatureValue = document.createElement('h3');
-        const todayWeatherIconContainer = document.createElement('div');
-        //const todayWeatherTemperature = document.createElement('p');
-        const todayWeatherIcon = document.createElement('img');
-        const todayWeatherStatus = document.createElement('p');
-        const todayWeatherConditionsContainer = document.createElement('div');
-        const todayWeatherDate = document.createElement('p');
-        const todayWeatherHumidity = document.createElement('p');
-        const todayWeatherWindSpeed = document.createElement('p');
-        const todayWeatherUVIndex = document.createElement('p');
 
-        todayWeatherSection.setAttribute('class', 'today-weather-section');
+        const todayWeatherRender = `
+            <h3 class="city-name is-size-3 mb-1" data-name="${name},${sys.country}">
+                <span>${cityName}</span>
+                <sup>${sys.country}</sup>
+            </h3>
+            <article class="columns">
+                <div class="column">
+                    <p class="is-size-5 mb-3"><strong>${currentDate}</strong></p>
+                    <figure>
+                        <img src="${weatherIcon}" alt="${weatherStatus}">
+                        <figcaption>${weatherStatus}</figcaption>
+                    </figure>
+                </div>
+                <div class="column is-flex is-align-items-center is-justify-content-center">
+                    <h3 class="city-temperature has-text-weight-bold is-size-1">${temperature}<sup>°C</sup></h3>
+                </div>
+                <div class="column">
+                    <p class="is-size-5 mb-3"><strong>Humidity:</strong> ${humidity}</p>
+                    <p class="is-size-5 mb-3"><strong>Wind Speed:</strong> ${windSpeed}</p>
+                    <p class="is-size-5"><strong>UV Index:</strong> </p>
+                </div>
+            </article>
+        `;
 
-        todayWeatherTemperatureContainer.append(todayWeatherTemperatureValue);
-        todayWeatherIconContainer.append(todayWeatherTemperatureContainer);
-        //todayWeatherIconContainer.append(todayWeatherTemperature);
-        todayWeatherIconContainer.append(todayWeatherIcon);
-        todayWeatherIconContainer.append(todayWeatherStatus);
-        todayWeatherConditionsContainer.append(todayWeatherDate);
-        todayWeatherConditionsContainer.append(todayWeatherHumidity);
-        todayWeatherConditionsContainer.append(todayWeatherWindSpeed);
-        todayWeatherConditionsContainer.append(todayWeatherUVIndex);
-        todayWeatherArticle.append(todayWeatherIconContainer);
-        todayWeatherArticle.append(todayWeatherTemperatureContainer);
-
-        todayWeatherArticle.append(todayWeatherConditionsContainer);
-        todayWeatherSection.append(todayWeatherHeader);
-        todayWeatherSection.append(todayWeatherArticle);
-
-        todayWeatherSection.setAttribute('class', 'box');
-        todayWeatherHeader.setAttribute('class', 'is-size-5 mb-1');
-        todayWeatherHeader.innerHTML = 'Today\'s Forecast - <strong>' + cityName + `</strong>`;
-        todayWeatherArticle.setAttribute('class', 'columns');
-        todayWeatherIconContainer.setAttribute('class', 'column');
-        todayWeatherTemperatureContainer.setAttribute('class', 'column is-flex is-align-items-center is-justify-content-center');
-        todayWeatherConditionsContainer.setAttribute('class', 'column');
-
-        //todayWeatherTemperature.setAttribute('class', 'is-size-5 has-text-weight-bold');
-        //todayWeatherTemperature.textContent = temperature;
-        todayWeatherIcon.setAttribute('style', `content: url(${weatherIcon});`);
-        todayWeatherStatus.setAttribute('class', '');
-        todayWeatherStatus.innerHTML = weatherStatus;
-
-        todayWeatherTemperatureValue.setAttribute('class', 'has-text-weight-bold is-size-1');
-        todayWeatherTemperatureValue.textContent = temperature;
-
-        todayWeatherDate.setAttribute('class', 'is-size-5 mb-3');
-        todayWeatherDate.innerHTML = `<strong>` + currentDate + `</strong>`;
-        todayWeatherHumidity.setAttribute('class', 'mb-2');
-        todayWeatherHumidity.innerHTML = `<strong>Humidity:</strong> ` + humidity + `%`;
-        todayWeatherWindSpeed.setAttribute('class', 'mb-2');
-        todayWeatherWindSpeed.innerHTML = `<strong>Wind Speed:</strong> ` + windSpeed + ` meter/sec`;
-        todayWeatherUVIndex.setAttribute('class', 'mb-2');
-        todayWeatherUVIndex.textContent = "UV Index, yet to get";
+        todayWeatherSection.innerHTML = todayWeatherRender;
+        todayWeatherSection.setAttribute('class', 'box today-weather-section');
 
         // Creating, appending and styling the FIVE DAY WEATHER SECTION
         const fiveDayWeatherSection = document.createElement('section');
@@ -243,18 +214,6 @@ function renderSearchHistory() {
     }
 }
 
-// function renderSearchHistoryWhenFull() {
-//     console.log
-//     searchHistoryArticle.removeChild(searchHistoryArticle.lastChild);
-//     let searchHistoryItem = document.createElement('p');
-//     searchHistoryItem.textContent = searchHistoryArray[0];
-//     searchHistoryItem.setAttribute('data-search-history', 0);
-//     searchHistoryItem.setAttribute('class', 'mb-1 p-1 search-city');
-//     searchHistoryItem.setAttribute('style', 'background: #a8a8a8; cursor: pointer; margin: 0 auto;');
-//     searchHistoryArticle.prepend(searchHistoryItem);
-//     searchClick();
-// }
-
 function storeSearchHistory() {
     localStorage.setItem("searchHistory", JSON.stringify(searchHistoryArray));
 }
@@ -285,14 +244,6 @@ function searchWithHistory(event) {
     getWeatherApi(event);
 }
 
-//const searchCity = document.querySelectorAll('.search-city');
-
-// for (const paragraph of searchCities) {
-//     paragraph.addEventListener('click', searchWithHistory);
-// }
-// for(i = 0; i < searchCities.length; i++) {
-//     searchCities[i].addEventListener('click', searchWithHistory);
-// }
 function searchHistoryClick() {
     const searchCity = document.querySelectorAll('.search-city');
     Array.from(searchCity).forEach(paragraph => {

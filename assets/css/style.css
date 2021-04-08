@@ -1,3 +1,13 @@
+:root {
+    --bg_main: #0a1f44;
+    --text_light: #fff;
+    --text_med: #53627c;
+    --text_dark: #1e2432;
+    --red: #ff1e42;
+    --darkred: #c3112d;
+    --orange: #ff8c00;
+  }
+
 .weather-icon {
     content: url(../images/Weather-Track-Icon.png);
     height: 30px;
@@ -7,4 +17,12 @@
     display: inline-block;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale
+}
+
+.city-name sup {
+    background: var(--orange);
+    border-radius: 30px;
+    color: var(--text_light);
+    font-size: 0.5em;
+    padding: 0.2em 0.6em;
 }

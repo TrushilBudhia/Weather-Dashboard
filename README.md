@@ -12,7 +12,7 @@ Recent searches are saved in the search history at the bottom of the page.
 
 The link to the deployed application:
 
-Code Quiz: 
+Weather Dashboard: https://trushilbudhia.github.io/Weather-Dashboard/
 
 ## Assets
 
