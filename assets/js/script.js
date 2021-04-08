@@ -1,5 +1,3 @@
-var weatherKey = config.WEATHER_KEY;
-
 // Building the page by creating and appending elements
 const body = document.querySelector('body');
 const headerSection = document.querySelector('header');
@@ -75,6 +73,7 @@ footerSection.append(footerParagraph);
 // How to get UV Index - use the lat and lon
 // 
 
+const weatherKey = 'f7d89673838826a4c4b4d46f85f8dde7';
 let searchHistoryArray = [];
 
 // Functions
@@ -82,9 +81,9 @@ function getWeatherApi(event) {
     event.preventDefault();
     let inputValue = searchInput.value;
     //searchInput.value = "";
-    let weatherRequestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputValue}&appid=${weatherKey}&units=metric`;;
+    let todayWeatherRequestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputValue}&appid=${weatherKey}&units=metric`;
 
-    fetch(weatherRequestUrl, {
+    fetch(todayWeatherRequestUrl, {
         cache: "reload",
     })
     .then(response => response.json())
@@ -101,6 +100,11 @@ function getWeatherApi(event) {
         let windSpeed = wind.speed + ' m/s';
         let currentLatitude = coord.lat;
         let currentLongitutde = coord.lon;
+
+        /*fetch(todayWeatherRequestUrl, {
+            cache: "reload",
+        })
+        .then()*/
 
         // Creating, appending and styling the TODAY'S WEATHER SECTION
         const todayWeatherSection = document.createElement('section');
@@ -131,6 +135,25 @@ function getWeatherApi(event) {
 
         todayWeatherSection.innerHTML = todayWeatherRender;
         todayWeatherSection.setAttribute('class', 'box today-weather-section');
+        let sectionSelect = document.querySelectorAll('section');
+        if(sectionSelect.length > 3) {
+            sectionSelect[2].remove();
+            //sectionSelect[1].remove();
+        }
+
+        mainSection.insertBefore(todayWeatherSection, searchHistorySection);
+    })
+    .catch((error) => {
+        console.error('Error: ', error);
+    })
+
+    let fiveDayWeatherRequestUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${inputValue}&appid=${weatherKey}`;
+    fetch(fiveDayWeatherRequestUrl, {
+        cache: "reload",
+    })
+    .then(response => response.json())
+    .then(fiveDayForecast => {
+        console.log(fiveDayForecast);
 
         // Creating, appending and styling the FIVE DAY WEATHER SECTION
         const fiveDayWeatherSection = document.createElement('section');
@@ -144,10 +167,28 @@ function getWeatherApi(event) {
 
         let days = ['One', 'Two', 'Three', 'Four', 'Five'];
         for(i = 0; i < days.length; i++) {
+            let { city, list } = fiveDayForecast;
+            let weatherIcon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${list[i].weather[0]["icon"]}.svg`;
+            let weatherStatus = list[i].weather[0]["description"];
+            let dateValue = moment(list[i].dt * 1000);       // Converting Unix timestamp to milliseconds and using moment.js to convert it to a date
+            let currentDate = dateValue.format('D MMMM YYYY');  
+            let cityName = city.name;
+            //let temperature = (list[i].main.temp - 32) * (5/9);
+            let temperature = list[i].main.temp;
+            let humidity = list[i].main.humidity + '%';
+            let windSpeed = list[i].wind.speed + ' m/s';
+
+            // Use if statement to calculate the date, average temperation, humidity, wind speed and date of the day
+            // if(i <= 8) {}
+            // if(i >=8 && i <= 16) {}
+            // if(i >= 16 && i <= 24) {}
+            // if(i >= 24 && i <= 32) {}
+            // if(i >= 32 && i <= 40) {}
+
             const fiveDayWeatherDay = document.createElement('article');
             fiveDayWeatherDay.setAttribute('class', 'column');
             const fiveDayWeatherRender = `
-                <h4 class="has-text-weight-bold is-size-5">Day ${days[i]}</h4>
+                <h4 class="has-text-weight-bold is-size-5">${currentDate}</h4>
                 <figure>
                     <img src="${weatherIcon}" alt="${weatherStatus}">
                     <figcaption>${weatherStatus}</figcaption>
@@ -161,45 +202,15 @@ function getWeatherApi(event) {
             fiveDayWeatherDaysContainer.append(fiveDayWeatherDay);
         }
 
-
-        /*let days = ['One', 'Two', 'Three', 'Four', 'Five'];
-        for(i = 0; i < days.length; i++) {
-            const fiveDayWeatherDay = document.createElement('article');
-            const fiveDayWeatherDayIcon = document.createElement('img');
-            const fiveDayWeatherDayDate = document.createElement('p');
-            const fiveDayWeatherDayTemperature = document.createElement('p');
-            const fiveDayWeatherDayHumidity = document.createElement('p');
-
-            fiveDayWeatherDay.setAttribute('class', 'column');
-            fiveDayWeatherDayIcon.setAttribute('class', 'row');
-            fiveDayWeatherDayDate.setAttribute('class', 'row');
-            fiveDayWeatherDayTemperature.setAttribute('class', 'row');
-            fiveDayWeatherDayHumidity.setAttribute('class', 'row');
-            fiveDayWeatherDay.innerHTML = '<h4>Day ' + days[i] + '</h4>';
-            fiveDayWeatherDayIcon.setAttribute('data-weather-icon', 'Get icon ' + days[i]);
-            fiveDayWeatherDayDate.setAttribute('data-weather-date', 'Get date ' + days[i]);
-            fiveDayWeatherDayTemperature.setAttribute('data-weather-temperature', 'Get temperature ' + days[i]);
-            fiveDayWeatherDayHumidity.setAttribute('data-weather-humidity', 'Get humidity ' + days[i]);
-
-            fiveDayWeatherDay.append(fiveDayWeatherDayDate);
-            fiveDayWeatherDay.append(fiveDayWeatherDayIcon);
-            fiveDayWeatherDay.append(fiveDayWeatherDayTemperature);
-            fiveDayWeatherDay.append(fiveDayWeatherDayHumidity);
-            fiveDayWeatherDaysContainer.append(fiveDayWeatherDay);
-        }*/
-
         fiveDayWeatherSection.append(fiveDayWeatherHeader);
         fiveDayWeatherSection.append(fiveDayWeatherDaysContainer);
         let sectionSelect = document.querySelectorAll('section');
-        if(sectionSelect.length > 2) {
-            sectionSelect[2].remove();
+        if(sectionSelect.length > 3) {
             sectionSelect[1].remove();
+            //sectionSelect[1].remove();
         }
 
-        mainSection.insertBefore(todayWeatherSection, searchHistorySection);
         mainSection.insertBefore(fiveDayWeatherSection, searchHistorySection);
-
-
 
         addToSearchHistory(searchHistoryArray, inputValue);
         storeSearchHistory();
