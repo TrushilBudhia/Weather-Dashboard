@@ -97,8 +97,8 @@ function getWeatherApi(event) {
         let currentDate = dateValue.format('D MMMM YYYY');  
         let cityName = name;
         let temperature = main.temp;
-        let humidity = main.humidity;
-        let windSpeed = wind.speed;
+        let humidity = main.humidity + '%';
+        let windSpeed = wind.speed + ' m/s';
         let currentLatitude = coord.lat;
         let currentLongitutde = coord.lon;
 
@@ -111,21 +111,21 @@ function getWeatherApi(event) {
                 <sup>${sys.country}</sup>
             </h3>
             <article class="columns">
-                <div class="column">
-                    <p class="is-size-5 mb-3"><strong>${currentDate}</strong></p>
+                <article class="column">
+                    <h4 class="has-text-weight-bold is-size-5 mb-3">${currentDate}</h4>
                     <figure>
                         <img src="${weatherIcon}" alt="${weatherStatus}">
                         <figcaption>${weatherStatus}</figcaption>
                     </figure>
-                </div>
-                <div class="column is-flex is-align-items-center is-justify-content-center">
+                </article>
+                <article class="column is-flex is-align-items-center is-justify-content-center">
                     <h3 class="city-temperature has-text-weight-bold is-size-1">${temperature}<sup>°C</sup></h3>
-                </div>
-                <div class="column">
+                </article>
+                <article class="column">
                     <p class="is-size-5 mb-3"><strong>Humidity:</strong> ${humidity}</p>
-                    <p class="is-size-5 mb-3"><strong>Wind Speed:</strong> ${windSpeed}</p>
+                    <p class="is-size-5 mb-3"><strong>Wind:</strong> ${windSpeed}</p>
                     <p class="is-size-5"><strong>UV Index:</strong> </p>
-                </div>
+                </article>
             </article>
         `;
 
@@ -134,11 +134,35 @@ function getWeatherApi(event) {
 
         // Creating, appending and styling the FIVE DAY WEATHER SECTION
         const fiveDayWeatherSection = document.createElement('section');
-    
         const fiveDayWeatherHeader = document.createElement('h3');
         const fiveDayWeatherDaysContainer = document.createElement('article');
 
+        fiveDayWeatherSection.setAttribute('class', 'box');
+        fiveDayWeatherHeader.setAttribute('class', 'has-text-weight-bold is-size-4 mb-2');
+        fiveDayWeatherHeader.textContent = 'Five Day Weather Forecast';
+        fiveDayWeatherDaysContainer.setAttribute('class', 'columns');
+
         let days = ['One', 'Two', 'Three', 'Four', 'Five'];
+        for(i = 0; i < days.length; i++) {
+            const fiveDayWeatherDay = document.createElement('article');
+            fiveDayWeatherDay.setAttribute('class', 'column');
+            const fiveDayWeatherRender = `
+                <h4 class="has-text-weight-bold is-size-5">Day ${days[i]}</h4>
+                <figure>
+                    <img src="${weatherIcon}" alt="${weatherStatus}">
+                    <figcaption>${weatherStatus}</figcaption>
+                </figure>
+                <p class="has-text-weight-bold is-size-2">${temperature}<sup>°C</sup></p>
+                <p class="mb-3"><strong>Humidity:</strong> ${humidity}</p>
+                <p class="mb-3"><strong>Wind:</strong> ${windSpeed}</p>
+            `;
+            //fiveDayWeatherDaysContainer.append(fiveDayWeatherRender);
+            fiveDayWeatherDay.innerHTML = fiveDayWeatherRender;
+            fiveDayWeatherDaysContainer.append(fiveDayWeatherDay);
+        }
+
+
+        /*let days = ['One', 'Two', 'Three', 'Four', 'Five'];
         for(i = 0; i < days.length; i++) {
             const fiveDayWeatherDay = document.createElement('article');
             const fiveDayWeatherDayIcon = document.createElement('img');
@@ -162,7 +186,7 @@ function getWeatherApi(event) {
             fiveDayWeatherDay.append(fiveDayWeatherDayTemperature);
             fiveDayWeatherDay.append(fiveDayWeatherDayHumidity);
             fiveDayWeatherDaysContainer.append(fiveDayWeatherDay);
-        }
+        }*/
 
         fiveDayWeatherSection.append(fiveDayWeatherHeader);
         fiveDayWeatherSection.append(fiveDayWeatherDaysContainer);
@@ -175,9 +199,7 @@ function getWeatherApi(event) {
         mainSection.insertBefore(todayWeatherSection, searchHistorySection);
         mainSection.insertBefore(fiveDayWeatherSection, searchHistorySection);
 
-        fiveDayWeatherSection.setAttribute('class', 'box text-center');
-        fiveDayWeatherHeader.textContent = 'Five Day Weather Forecast';
-        fiveDayWeatherDaysContainer.setAttribute('class', 'columns');
+
 
         addToSearchHistory(searchHistoryArray, inputValue);
         storeSearchHistory();
