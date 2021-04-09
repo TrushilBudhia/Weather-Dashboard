@@ -1,72 +1,3 @@
-// Building the page by creating and appending elements
-const body = document.querySelector('body');
-const headerSection = document.querySelector('header');
-const mainSection = document.querySelector('main');
-const footerSection = document.querySelector('footer');
-
-body.setAttribute('class', 'has-background-info-light m-0 p-0');
-body.setAttribute('style', 'height: 100%;');
-headerSection.setAttribute('class', 'has-background-primary-dark mb-5 py-3');
-headerSection.setAttribute('style', 'box-shadow: 0 1px 2px 0 rgb(0 0 0 / 20%), 0 3px 4px 0 rgb(0 0 0 / 19%);');
-mainSection.setAttribute('class', 'container has-text-centered');
-
-// Creating, appending and styling the HEADER SECTION
-const pageHeading = document.createElement('h1');
-const pageIcon = document.createElement('i');
-headerSection.append(pageIcon);
-headerSection.append(pageHeading);
-pageIcon.setAttribute('class', 'weather-icon header-style ml-1 mr-2');
-pageHeading.setAttribute('class', 'header-style has-text-left has-text-white title is-2');
-pageHeading.textContent = 'Weather Dashboard';
-
-// Creating, appending and styling the SEARCH SECTION
-const searchSection = document.createElement('section');
-const searchForm = document.createElement('form');
-const searchLabel = document.createElement('label');
-const searchInput = document.createElement('input');
-const searchSubmit = document.createElement('button');
-
-searchForm.append(searchLabel);
-searchForm.append(searchInput);
-searchForm.append(searchSubmit);
-searchSection.append(searchForm);
-mainSection.append(searchSection);
-
-searchLabel.textContent = "City to search";
-searchInput.setAttribute('placeholder', 'Input City Name');
-searchSubmit.textContent = 'Submit';
-
-searchLabel.setAttribute('class', 'label has-text-grey is-size-4 is-flex is-justify-content-flex-start');
-searchInput.setAttribute('class', 'input');
-searchSubmit.setAttribute('class', 'button is-primary mt-2 submit');
-searchSubmit.setAttribute('style', 'margin-left: 70%; width: 30%;');
-searchSection.setAttribute('class', 'box');
-
-// Creating, appending and styling the SEARCH HISTORY SECTION
-const searchHistorySection = document.createElement('section');
-const searchHistoryHeader = document.createElement('h3');
-const searchHistoryArticle = document.createElement('article');
-
-searchHistorySection.append(searchHistoryHeader);
-searchHistorySection.append(searchHistoryArticle);
-mainSection.append(searchHistorySection);
-
-searchHistorySection.setAttribute('class', 'box mb-5');
-searchHistoryHeader.textContent = 'Search History';
-searchHistoryHeader.setAttribute('class', 'title is-4');
-
-// Creating, appending and styling the footer section
-const footerParagraph = document.createElement('p');
-const footerParagraphAnchor = document.createElement('a');
-footerParagraphAnchor.textContent = "Trushil";
-footerParagraphAnchor.setAttribute('href', 'https://trushilbudhia.github.io/Portfolio/');
-footerParagraphAnchor.setAttribute('class', 'has-text-white');
-footerParagraph.textContent = '© Created by ';
-footerSection.setAttribute('class', 'bg-secondary p-4 text-center text-white w-100');
-footerSection.setAttribute('style', 'background: #313131; bottom: 0px; color: #fff; left: 0px; margin: 0 auto; padding: 20px 0; position: relative; text-align: center; width: 100%;');
-footerParagraph.append(footerParagraphAnchor);
-footerSection.append(footerParagraph);
-
 // User enters city name in input field
 // When submit is clicked, the text in the input field is used to target what city the weather data needs to be requested for
 // The open weather API takes parameters of lat, lon - how can a city (string) provide such information?
@@ -81,8 +12,9 @@ function getWeatherApi(event) {
     event.preventDefault();
     let inputValue = searchInput.value;
     //searchInput.value = "";
-    let todayWeatherRequestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputValue}&appid=${weatherKey}&units=metric`;
 
+    // FETCH request for today's weather data
+    let todayWeatherRequestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputValue}&appid=${weatherKey}&units=metric`;
     fetch(todayWeatherRequestUrl, {
         cache: "reload",
     })
@@ -93,6 +25,8 @@ function getWeatherApi(event) {
         let weatherIcon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weather[0]["icon"]}.svg`;
         let weatherStatus = weather[0]["description"];
         let dateValue = moment(dt * 1000);       // Converting Unix timestamp to milliseconds and using moment.js to convert it to a date
+        // let dateValue2 = new Date(dt * 1000);       // Converting Unix timestamp to milliseconds and using moment.js to convert it to a date
+        // console.log(dateValue2);
         let currentDate = dateValue.format('D MMMM YYYY');  
         let cityName = name;
         let temperature = main.temp;
@@ -100,11 +34,6 @@ function getWeatherApi(event) {
         let windSpeed = wind.speed + ' m/s';
         let currentLatitude = coord.lat;
         let currentLongitutde = coord.lon;
-
-        /*fetch(todayWeatherRequestUrl, {
-            cache: "reload",
-        })
-        .then()*/
 
         // Creating, appending and styling the TODAY'S WEATHER SECTION
         const todayWeatherSection = document.createElement('section');
@@ -147,7 +76,8 @@ function getWeatherApi(event) {
         console.error('Error: ', error);
     })
 
-    let fiveDayWeatherRequestUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${inputValue}&appid=${weatherKey}`;
+    // FETCH request for the five day weather forecast data
+    let fiveDayWeatherRequestUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${inputValue}&appid=${weatherKey}&units=metric`;
     fetch(fiveDayWeatherRequestUrl, {
         cache: "reload",
     })
@@ -165,30 +95,114 @@ function getWeatherApi(event) {
         fiveDayWeatherHeader.textContent = 'Five Day Weather Forecast';
         fiveDayWeatherDaysContainer.setAttribute('class', 'columns');
 
+        // Using a forEach loop to cycle through all the list items and extracting the relevant information to use as per days instead of per 3 hours
+        // let dayOneDate, dayTwoDate, dayThreeDate, dayFourDate, dayFiveDate, dayOneTemperature, dayTwoTemperature, dayThreeTemperature, dayFourTemperature, dayFiveTemperature;
+        //let dayOneTemperatureArray = [];
+        let futureDayForecastDays = [
+            dayOne = {
+                date: '',
+                icon: '',
+                status: '',
+                temperature: [],
+                humidity: [],
+                windSpeed: [],
+            },
+            dayTwo = {
+                date: '',
+                icon: '',
+                status: '',
+                temperature: [],
+                humidity: [],
+                windSpeed: [],
+            },
+            dayThree = {
+                date: '',
+                icon: '',
+                status: '',
+                temperature: [],
+                humidity: [],
+                windSpeed: [],
+            },
+            dayFour = {
+                date: '',
+                icon: '',
+                status: '',
+                temperature: [],
+                humidity: [],
+                windSpeed: [],
+            },
+            dayFive = {
+                date: '',
+                icon: '',
+                status: '',
+                temperature: [],
+                humidity: [],
+                windSpeed: [],
+            },
+        ];
+        let { list } = fiveDayForecast;
+        listIndex = 0;
+        list.forEach(function() {
+            if(listIndex < 8) {
+                addWeatherForecastToObject(0, listIndex);
+            }
+            else if(listIndex >= 8 && listIndex < 16) {
+                addWeatherForecastToObject(1, listIndex);
+                //console.log(dayTwoDate);
+            }
+            else if(listIndex >= 16 && listIndex < 24) {
+                addWeatherForecastToObject(2, listIndex);
+                //console.log(dayThreeDate);
+            }
+            else if(listIndex >= 24 && listIndex < 32) {
+                addWeatherForecastToObject(3, listIndex);
+                //console.log(dayFourDate);
+            }
+            else if(listIndex >= 32 && listIndex < 40) {
+                addWeatherForecastToObject(4, listIndex);
+                //console.log(dayFiveDate);
+            }
+            listIndex++;
+        });
+
+                
+        function addWeatherForecastToObject(arrayIndex, listIndex) {
+            futureDayForecastDays[arrayIndex].date = moment(list[listIndex].dt * 1000).format('D MMMM YYYY');
+            let temperature = list[listIndex].main.temp;
+            futureDayForecastDays[arrayIndex].temperature.push(temperature);
+            
+            if(listIndex > 0) {
+                futureDayForecastDays[arrayIndex].icon = list[listIndex-1].weather[0]["icon"]
+                futureDayForecastDays[arrayIndex].status = list[listIndex-1].weather[0]["description"]
+            }
+            else {
+                futureDayForecastDays[arrayIndex].icon = list[listIndex].weather[0]["icon"]
+                futureDayForecastDays[arrayIndex].status = list[listIndex].weather[0]["description"]
+            }
+            futureDayForecastDays[arrayIndex].temperature.sort(function(a, b) {
+                return b - a;
+            });    
+        }
+        // Creating an array for the five day dates and pushing the individual dates into the created array
+
+        console.log(futureDayForecastDays);
+        // console.log(fiveDayForecastDays.dayOne.dayOneTemperature);
+        
         let days = ['One', 'Two', 'Three', 'Four', 'Five'];
         for(i = 0; i < days.length; i++) {
-            let { city, list } = fiveDayForecast;
-            let weatherIcon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${list[i].weather[0]["icon"]}.svg`;
-            let weatherStatus = list[i].weather[0]["description"];
-            let dateValue = moment(list[i].dt * 1000);       // Converting Unix timestamp to milliseconds and using moment.js to convert it to a date
-            let currentDate = dateValue.format('D MMMM YYYY');  
-            let cityName = city.name;
-            //let temperature = (list[i].main.temp - 32) * (5/9);
-            let temperature = list[i].main.temp;
+            let weatherIconValue = futureDayForecastDays[i].icon.slice(0,2);
+            let weatherIcon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weatherIconValue}d.svg`;
+            let weatherStatus = futureDayForecastDays[i].status;
+            let dateValue = futureDayForecastDays[i].date;
+            let temperature = futureDayForecastDays[i].temperature[0];
             let humidity = list[i].main.humidity + '%';
             let windSpeed = list[i].wind.speed + ' m/s';
 
-            // Use if statement to calculate the date, average temperation, humidity, wind speed and date of the day
-            // if(i <= 8) {}
-            // if(i >=8 && i <= 16) {}
-            // if(i >= 16 && i <= 24) {}
-            // if(i >= 24 && i <= 32) {}
-            // if(i >= 32 && i <= 40) {}
-
+            // Building the content of the individual five day weather articles
             const fiveDayWeatherDay = document.createElement('article');
             fiveDayWeatherDay.setAttribute('class', 'column');
             const fiveDayWeatherRender = `
-                <h4 class="has-text-weight-bold is-size-5">${currentDate}</h4>
+                <h4 class="has-text-weight-bold is-size-5">${dateValue}</h4>
                 <figure>
                     <img src="${weatherIcon}" alt="${weatherStatus}">
                     <figcaption>${weatherStatus}</figcaption>
@@ -217,9 +231,15 @@ function getWeatherApi(event) {
     })
     .catch((error) => {
         console.error('Error: ', error);
-    })   
+    }) 
+    // Changing the height of the body when the submit button is clicked. And changing the display of the footer from absolute to block
+    body.setAttribute('style', 'height: 100%;');
+    setTimeout(function() {
+        footerSection.setAttribute('style', 'background: #313131; color: #fff; display: block; padding: 20px 0; text-align: center;');
+    }, 500);
 }
 
+// Adding the city searched to the search history. A maximum of 5 cities to be displayed in the search history
 function addToSearchHistory(searchHistoryArray, searchHistoryCity) {
     if(searchHistoryArray.length < 5) {
         searchHistoryArray.push(searchHistoryCity);
@@ -232,21 +252,23 @@ function addToSearchHistory(searchHistoryArray, searchHistoryCity) {
     }
 }
 
+// Rendering the search history by creating elements that are prepended to the search history article
 function renderSearchHistory() {
     while(searchHistoryArticle.firstChild) {
         searchHistoryArticle.removeChild(searchHistoryArticle.firstChild);
     }
     for(i = 0; i < searchHistoryArray.length; i++) {
-        let searchHistoryItem = document.createElement('p');
+        let searchHistoryItem = document.createElement('button');
         searchHistoryItem.textContent = searchHistoryArray[i];
         searchHistoryItem.setAttribute('data-search-history', i);
-        searchHistoryItem.setAttribute('class', 'mb-1 p-1 search-city');
-        searchHistoryItem.setAttribute('style', 'background: #a8a8a8; cursor: pointer; margin: 0 auto;');
+        searchHistoryItem.setAttribute('class', 'button is-fullwidth is-primary is-outlined mb-1 p-1 search-city');
+        //searchHistoryItem.setAttribute('style', 'background: #a8a8a8; cursor: pointer; margin: 0 auto;');
         searchHistoryArticle.prepend(searchHistoryItem);
         searchHistoryClick();
     }
 }
 
+// A function to store the searched city name in history
 function storeSearchHistory() {
     localStorage.setItem("searchHistory", JSON.stringify(searchHistoryArray));
 }
@@ -262,16 +284,15 @@ function loadSearchHistory() {
 }
 
 // Events
+// A click event for the submit to the city search form
 searchForm.addEventListener('submit', getWeatherApi);
 
 // Loading the recent search history on page load
 loadSearchHistory();
 
+// A function to call when the city item in the search history is clicked by the user
 function searchWithHistory(event) {
     event.preventDefault();
-    //console.log(this);
-    //console.log(searchCity);
-
     searchValue = this.getAttribute('data-search-history');
     searchInput.value = searchHistoryArray[searchValue];
     getWeatherApi(event);
