@@ -95,9 +95,8 @@ function getWeatherApi(event) {
         fiveDayWeatherHeader.textContent = 'Five Day Weather Forecast';
         fiveDayWeatherDaysContainer.setAttribute('class', 'columns');
 
-        // Using a forEach loop to cycle through all the list items and extracting the relevant information to use as per days instead of per 3 hours
-        // let dayOneDate, dayTwoDate, dayThreeDate, dayFourDate, dayFiveDate, dayOneTemperature, dayTwoTemperature, dayThreeTemperature, dayFourTemperature, dayFiveTemperature;
-        //let dayOneTemperatureArray = [];
+
+        // Creating an array of objects for the future days forecast 
         let futureDayForecastDays = [
             dayOne = {
                 date: '',
@@ -105,7 +104,9 @@ function getWeatherApi(event) {
                 status: '',
                 temperature: [],
                 humidity: [],
+                humidityAverage: '',
                 windSpeed: [],
+                windSpeedAverage: '',
             },
             dayTwo = {
                 date: '',
@@ -113,7 +114,9 @@ function getWeatherApi(event) {
                 status: '',
                 temperature: [],
                 humidity: [],
+                humidityAverage: '',
                 windSpeed: [],
+                windSpeedAverage: '',
             },
             dayThree = {
                 date: '',
@@ -121,7 +124,9 @@ function getWeatherApi(event) {
                 status: '',
                 temperature: [],
                 humidity: [],
+                humidityAverage: '',
                 windSpeed: [],
+                windSpeedAverage: '',
             },
             dayFour = {
                 date: '',
@@ -129,7 +134,9 @@ function getWeatherApi(event) {
                 status: '',
                 temperature: [],
                 humidity: [],
+                humidityAverage: '',
                 windSpeed: [],
+                windSpeedAverage: '',
             },
             dayFive = {
                 date: '',
@@ -137,9 +144,13 @@ function getWeatherApi(event) {
                 status: '',
                 temperature: [],
                 humidity: [],
+                humidityAverage: '',
                 windSpeed: [],
+                windSpeedAverage: '',
             },
         ];
+
+        // Using a forEach loop to cycle through all the list items and extracting the relevant information to use as per days instead of per 3 hours
         let { list } = fiveDayForecast;
         listIndex = 0;
         list.forEach(function() {
@@ -148,30 +159,24 @@ function getWeatherApi(event) {
             }
             else if(listIndex >= 8 && listIndex < 16) {
                 addWeatherForecastToObject(1, listIndex);
-                //console.log(dayTwoDate);
             }
             else if(listIndex >= 16 && listIndex < 24) {
                 addWeatherForecastToObject(2, listIndex);
-                //console.log(dayThreeDate);
             }
             else if(listIndex >= 24 && listIndex < 32) {
                 addWeatherForecastToObject(3, listIndex);
-                //console.log(dayFourDate);
             }
             else if(listIndex >= 32 && listIndex < 40) {
                 addWeatherForecastToObject(4, listIndex);
-                //console.log(dayFiveDate);
             }
             listIndex++;
         });
 
-                
+        // Function to extract the relevant information from the data retrieved from the API        
         function addWeatherForecastToObject(arrayIndex, listIndex) {
-            futureDayForecastDays[arrayIndex].date = moment(list[listIndex].dt * 1000).format('D MMMM YYYY');
-            let temperature = list[listIndex].main.temp;
-            futureDayForecastDays[arrayIndex].temperature.push(temperature);
-            
-            if(listIndex > 0) {
+            futureDayForecastDays[arrayIndex].date = moment(list[listIndex].dt * 1000).format('D MMMM YYYY');      // Getting the dates of the next five days
+
+            if(listIndex > 0) {     //Using an if else statement to get the icon and weather description of each day for the next five days
                 futureDayForecastDays[arrayIndex].icon = list[listIndex-1].weather[0]["icon"]
                 futureDayForecastDays[arrayIndex].status = list[listIndex-1].weather[0]["description"]
             }
@@ -179,24 +184,41 @@ function getWeatherApi(event) {
                 futureDayForecastDays[arrayIndex].icon = list[listIndex].weather[0]["icon"]
                 futureDayForecastDays[arrayIndex].status = list[listIndex].weather[0]["description"]
             }
-            futureDayForecastDays[arrayIndex].temperature.sort(function(a, b) {
+
+            let temperatureValue = list[listIndex].main.temp;
+            futureDayForecastDays[arrayIndex].temperature.push(temperatureValue);       // Adding the temperature to an array for each of the five days which is located in an array of objects 
+            futureDayForecastDays[arrayIndex].temperature.sort(function(a, b) {         // Sorting the temperature values in the array from highest to lowest 
                 return b - a;
             });    
+   
+            let humidityValue = list[listIndex].main.humidity;
+            futureDayForecastDays[arrayIndex].humidity.push(humidityValue);
+            let totalHumidity = futureDayForecastDays[arrayIndex].humidity.reduce(addingValuesInArray);     // Aggregating the humidity readings across the day - eight lots of 3 hour segments
+            let humidityAverageValue = totalHumidity/8;                                                     // Averaging out the total humidity reading for the day
+            futureDayForecastDays[arrayIndex].humidityAverage = humidityAverageValue;                       // Assigning the average humidty reading to the futureDaysForecast array of objects
+
+            let windSpeedValue = list[listIndex].wind.speed;
+            futureDayForecastDays[arrayIndex].windSpeed.push(windSpeedValue);
+            let totalWindSpeed = futureDayForecastDays[arrayIndex].windSpeed.reduce(addingValuesInArray);   // Aggregating the wind speed readings across the day - eight lots of 3 hour segments
+            let windSpeedAverageValue = totalWindSpeed/8;                                                   // Averaging out the total wind speed reading for the day
+            futureDayForecastDays[arrayIndex].windSpeedAverage = windSpeedAverageValue;                     // Assigning the average wind speed reading to the futureDaysForecast array of objects
         }
-        // Creating an array for the five day dates and pushing the individual dates into the created array
+
+        // Function to add the values in an array together
+        function addingValuesInArray(total, number) {
+            return total + number;
+        }
 
         console.log(futureDayForecastDays);
-        // console.log(fiveDayForecastDays.dayOne.dayOneTemperature);
-        
-        let days = ['One', 'Two', 'Three', 'Four', 'Five'];
-        for(i = 0; i < days.length; i++) {
+
+        for(i = 0; i < futureDayForecastDays.length; i++) {
+            let dateValue = futureDayForecastDays[i].date;
             let weatherIconValue = futureDayForecastDays[i].icon.slice(0,2);
             let weatherIcon = `https://s3-us-west-2.amazonaws.com/s.cdpn.io/162656/${weatherIconValue}d.svg`;
             let weatherStatus = futureDayForecastDays[i].status;
-            let dateValue = futureDayForecastDays[i].date;
-            let temperature = futureDayForecastDays[i].temperature[0];
-            let humidity = list[i].main.humidity + '%';
-            let windSpeed = list[i].wind.speed + ' m/s';
+            let temperature = Math.round(futureDayForecastDays[i].temperature[0]);
+            let humidity = futureDayForecastDays[i].humidityAverage.toFixed(0) + '%';
+            let windSpeed = futureDayForecastDays[i].windSpeedAverage.toFixed(2) + ' m/s';
 
             // Building the content of the individual five day weather articles
             const fiveDayWeatherDay = document.createElement('article');
