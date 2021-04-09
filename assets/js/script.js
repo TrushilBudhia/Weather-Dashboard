@@ -13,7 +13,6 @@ function getWeatherApi(event) {
     })
     .then(response => response.json())
     .then(cityConditions => {
-        console.log(cityConditions);
         let { coord, name, sys } = cityConditions;
         let cityName = name;
         let country = sys.country;
@@ -27,8 +26,6 @@ function getWeatherApi(event) {
         })
         .then(response => response.json())
         .then(cityWeatherData => {
-            console.log(cityWeatherData);
-            //let { current, dt, main, name, sys, weather, wind } = cityWeatherData;
             let { current, daily } = cityWeatherData;
             let dateValue = moment(current.dt * 1000);       // Converting Unix timestamp to milliseconds and using moment.js to convert it to a date
             let currentDate = dateValue.format('D MMMM YYYY');  
@@ -165,17 +162,17 @@ function renderSearchHistory() {
 function uvColor(uvIndexValue, uvInfo) {
     let uvIndexSpan = document.querySelector('.uv-index-color');
     let uvIndexInfoSpan = document.querySelector('.uv-index-info');
-    if(uvIndexValue >= 0 && uvIndexValue <= 2) {
+    if(uvIndexValue >= 0 && uvIndexValue < 3) {
         uvIndexSpan.setAttribute('style', 'background: #33bc33; color: #fff; cursor: help; padding: 0.2rem 0.9rem;');
         uvInfo = 'Low exposure level';
         uvIndexInfoSpan.innerHTML = uvInfo;
     }
-    else if(uvIndexValue >= 3 && uvIndexValue <= 5) {
+    else if(uvIndexValue >= 3 && uvIndexValue < 6) {
         uvIndexSpan.setAttribute('style', 'background: #fffc2b; color: #000; cursor: help; padding: 0.2rem 0.9rem;');
         uvInfo = 'Moderate exposure level';
         uvIndexInfoSpan.innerHTML = uvInfo;
     }
-    else if(uvIndexValue >= 6 && uvIndexValue <= 7) {
+    else if(uvIndexValue >= 6 && uvIndexValue < 8) {
         uvIndexSpan.setAttribute('style', 'background: #ff9c2f; color: #fff; cursor: help; padding: 0.2rem 0.9rem;');
         uvInfo = 'High exposure level';
         uvIndexInfoSpan.innerHTML = uvInfo;
@@ -183,6 +180,11 @@ function uvColor(uvIndexValue, uvInfo) {
     else if(uvIndexValue >= 8 && uvIndexValue <= 10) {
         uvIndexSpan.setAttribute('style', 'background: #fa2f2f; color: #fff; cursor: help; padding: 0.2rem 0.9rem;');
         uvInfo = 'Very high exposure level';
+        uvIndexInfoSpan.innerHTML = uvInfo;
+    }
+    else {
+        uvIndexSpan.setAttribute('style', 'background: #ff0000; color: #fff; cursor: help; padding: 0.2rem 0.9rem;');
+        uvInfo = 'Extreme exposure level';
         uvIndexInfoSpan.innerHTML = uvInfo;
     }
 }
