@@ -1,3 +1,4 @@
+// TODO: Add icon to page tab
 const weatherKey = 'f7d89673838826a4c4b4d46f85f8dde7';
 let searchHistoryArray = [];
 
@@ -76,7 +77,7 @@ function getWeatherApi(event) {
             fiveDayWeatherHeader.textContent = 'Five Day Weather Forecast';
             fiveDayWeatherDaysContainer.setAttribute('class', 'columns');
    
-            for(i = 0; i < 5; i++) {
+            for(i = 1; i < 6; i++) {
                 let dateValue = moment(daily[i].dt * 1000);       // Converting Unix timestamp to milliseconds and using moment.js to convert it to a date
                 let futureDate = dateValue.format('D MMMM YYYY');  
                 let weatherIconValue = daily[i].weather[0].icon;
@@ -196,7 +197,7 @@ function storeSearchHistory() {
 
 function loadSearchHistory() {
     // Getting the search history item from the local storage
-    var storedSearchHistory = JSON.parse(localStorage.getItem('searchHistory'));
+    let storedSearchHistory = JSON.parse(localStorage.getItem('searchHistory'));
     // If storedSearchHistory does not equal null, the value of storedSearchHistory is assigned to the searchHistory
     if (storedSearchHistory !== null) {
         searchHistoryArray = storedSearchHistory;
