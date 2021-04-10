@@ -20,6 +20,6 @@ The CSS Framework used is Bulma.
 
 The following image shows the web application's appearance:
 
-![A weather dashboard that display the weather of the city the user searches. Recent searches are also saved in the search history.](./assets/images/Weather-Dashboard-Preview-img1.png)
+![A weather dashboard that display the weather of the city the user searches. Recent searches are also saved in the search history.](./assets/images/Weather-Dashboard-Preview.png)
 
 > **Note**: This layout is responsive.
