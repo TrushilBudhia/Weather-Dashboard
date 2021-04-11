@@ -1,12 +1,43 @@
-// TODO: Add icon to page tab
-const weatherKey = 'f7d89673838826a4c4b4d46f85f8dde7';
 let searchHistoryArray = [];
+let latitude, longitude, nameOfCity, googleCountryShortName;
+const weatherKey = 'f7d89673838826a4c4b4d46f85f8dde7';
+
+// Auto complete function - using the google maps autocomplete API
+function autoComplete() {
+    var autocomplete = new google.maps.places.Autocomplete(searchInput);
+    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        var place = autocomplete.getPlace();
+        nameOfCity = place.name;
+        if (!place.address_components) {
+            return;
+        }
+        if (place.address_components) {
+            googleCountryShortName = place.address_components[2]["short_name"];
+        }
+        if (!place.geometry || !place.geometry.location) {
+            // User entered the name of a Place that was not suggested 
+            return;
+        }
+        if (place.geometry || place.geometry.location) {
+            latitude = place.geometry.location.lat();
+            longitude = place.geometry.location.lng();
+        }
+    });
+}
+google.maps.event.addDomListener(window, 'load', autoComplete);
 
 // Functions
 function getWeatherApi(event) {
     event.preventDefault();
-    let inputValue = searchInput.value;
-
+    // Verifying if autocomplete was used to generate the city string. If not, the input text is assigned to the inputValue variable
+    let inputValue;
+    if(nameOfCity) {
+        inputValue = nameOfCity;
+    } 
+    else {
+        inputValue = searchInput.value;
+    }
+    nameOfCity = '';
     // FETCH request for today's weather data
     let todayWeatherRequestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputValue}&appid=${weatherKey}&units=metric`;
     fetch(todayWeatherRequestUrl, {
@@ -16,13 +47,36 @@ function getWeatherApi(event) {
     .then(cityConditions => {
         let { coord, name, sys } = cityConditions;
         let cityName = name;
-        let country = sys.country;
-        let currentLatitude = coord.lat;
-        let currentLongitutde = coord.lon;
+        //let countryShortName = sys.country;
+
+        function valueToUse() {
+            // If no values retrieved from the Google Maps API, use the values from the Open Weather Map weather fetch response
+            if(googleCountryShortName) {
+                countryShortName = googleCountryShortName;
+            } 
+            else {
+                countryShortName = sys.country;
+            }  
+            if(latitude && longitude) {
+                currentLatitude = latitude;
+                currentLongitude = longitude;
+            } 
+            else {
+                currentLatitude = coord.lat;
+                currentLongitude = coord.lon;
+            }
+            // Clearing values extracted from Google Maps API
+            googleCountryShortName = '';
+            latitude = ''
+            longitude = '';
+        }
+        let countryShortName, currentLatitude, currentLongitude;
+        valueToUse();
+
         let part = 'minutely,hourly'
         // FETCH request for the Open Weather Map One Call API data
-        let oneCallApiRequestURL = `https://api.openweathermap.org/data/2.5/onecall?lat=${currentLatitude}&lon=${currentLongitutde}&exclude=${part}&appid=${weatherKey}&units=metric`;
-        fetch(oneCallApiRequestURL, {
+        let oneCallApiRequestUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${currentLatitude}&lon=${currentLongitude}&exclude=${part}&appid=${weatherKey}&units=metric`;
+        fetch(oneCallApiRequestUrl, {
             cache: "reload",
         })
         .then(response => response.json())
@@ -41,9 +95,9 @@ function getWeatherApi(event) {
             const todayWeatherSection = document.createElement('section');
     
             const todayWeatherRender = `
-                <h3 class="city-name is-size-3 mb-1" data-name="${name},${country}">
+                <h3 class="city-name is-size-3 mb-1" data-name="${name},${countryShortName}">
                     <span>${cityName}</span>
-                    <sup>${country}</sup>
+                    <sup>${countryShortName}</sup>
                 </h3>
                 <article class="columns">
                     <article class="column">
@@ -114,7 +168,7 @@ function getWeatherApi(event) {
             uvColor(uvIndex);
 
             mainSection.insertBefore(fiveDayWeatherSection, searchHistorySection);
-            addToSearchHistory(searchHistoryArray, inputValue);
+            addToSearchHistory(searchHistoryArray, cityName);
             storeSearchHistory();
         })
         .catch((error) => {
@@ -125,38 +179,10 @@ function getWeatherApi(event) {
         console.error('Error: ', error);
     })
     // Changing the height of the body when the submit button is clicked. And changing the display of the footer from absolute to block
-    body.setAttribute('style', 'height: 100%;');
     setTimeout(function() {
+        body.setAttribute('style', 'height: 100%;');
         footerSection.setAttribute('style', 'background: #313131; color: #fff; display: block; padding: 20px 0; text-align: center;');
     }, 500);
-}
-
-// Adding the city searched to the search history. A maximum of 5 cities to be displayed in the search history
-function addToSearchHistory(searchHistoryArray, searchHistoryCity) {
-    if(searchHistoryArray.length < 5) {
-        searchHistoryArray.push(searchHistoryCity);
-        renderSearchHistory();
-    }
-    else {
-        searchHistoryArray.shift();
-        searchHistoryArray.push(searchHistoryCity);
-        renderSearchHistory();
-    }
-}
-
-// Rendering the search history by creating elements that are prepended to the search history article
-function renderSearchHistory() {
-    while(searchHistoryArticle.firstChild) {
-        searchHistoryArticle.removeChild(searchHistoryArticle.firstChild);
-    }
-    for(i = 0; i < searchHistoryArray.length; i++) {
-        let searchHistoryItem = document.createElement('button');
-        searchHistoryItem.textContent = searchHistoryArray[i];
-        searchHistoryItem.setAttribute('data-search-history', i);
-        searchHistoryItem.setAttribute('class', 'button is-fullwidth is-primary is-outlined mb-1 p-1 search-city');
-        searchHistoryArticle.prepend(searchHistoryItem);
-        searchHistoryClick();
-    }
 }
 
 // A function to give the UV Index background a color depending on the reading
@@ -190,6 +216,34 @@ function uvColor(uvIndexValue, uvInfo) {
     }
 }
 
+// Adding the city searched to the search history. A maximum of 5 cities to be displayed in the search history
+function addToSearchHistory(searchHistoryArray, searchHistoryCity) {
+    if(searchHistoryArray.length < 5) {
+        searchHistoryArray.push(searchHistoryCity);
+        renderSearchHistory();
+    }
+    else {
+        searchHistoryArray.shift();
+        searchHistoryArray.push(searchHistoryCity);
+        renderSearchHistory();
+    }
+}
+
+// Rendering the search history by creating elements that are prepended to the search history article
+function renderSearchHistory() {
+    while(searchHistoryArticle.firstChild) {
+        searchHistoryArticle.removeChild(searchHistoryArticle.firstChild);
+    }
+    for(i = 0; i < searchHistoryArray.length; i++) {
+        let searchHistoryItem = document.createElement('button');
+        searchHistoryItem.textContent = searchHistoryArray[i];
+        searchHistoryItem.setAttribute('data-search-history', i);
+        searchHistoryItem.setAttribute('class', 'button is-fullwidth is-primary is-outlined mb-1 p-1 search-city');
+        searchHistoryArticle.prepend(searchHistoryItem);
+        searchHistoryClick();
+    }
+}
+
 // A function to store the searched city name in history
 function storeSearchHistory() {
     localStorage.setItem('searchHistory', JSON.stringify(searchHistoryArray));
@@ -218,6 +272,8 @@ function searchWithHistory(event) {
     searchValue = this.getAttribute('data-search-history');
     searchInput.value = searchHistoryArray[searchValue];
     getWeatherApi(event);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
 }
 
 function searchHistoryClick() {
@@ -228,6 +284,3 @@ function searchHistoryClick() {
     })
 }
 searchHistoryClick();
-
-
-
