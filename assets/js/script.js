@@ -34,8 +34,11 @@ function getWeatherApi(event) {
     if(nameOfCity) {
         inputValue = nameOfCity;
     } 
-    else {
+    else if(searchInput.value) {
         inputValue = searchInput.value;
+    }
+    else {
+        return
     }
     nameOfCity = '';
     // FETCH request for today's weather data
@@ -47,8 +50,7 @@ function getWeatherApi(event) {
     .then(cityConditions => {
         let { coord, name, sys } = cityConditions;
         let cityName = name;
-        //let countryShortName = sys.country;
-
+        let countryShortName, currentLatitude, currentLongitude;
         function valueToUse() {
             // If no values retrieved from the Google Maps API, use the values from the Open Weather Map weather fetch response
             if(googleCountryShortName) {
@@ -70,7 +72,6 @@ function getWeatherApi(event) {
             latitude = ''
             longitude = '';
         }
-        let countryShortName, currentLatitude, currentLongitude;
         valueToUse();
 
         let part = 'minutely,hourly'
@@ -174,15 +175,16 @@ function getWeatherApi(event) {
         .catch((error) => {
             console.error('Error: ', error);
         }) 
+        // Changing the height of the body when the submit button is clicked. And changing the display of the footer from absolute to block
+        setTimeout(function() {
+            body.setAttribute('style', 'height: 100%;');
+            footerSection.setAttribute('style', 'background: #313131; color: #fff; display: block; padding: 20px 0; text-align: center;');
+        }, 500);
     })
     .catch((error) => {
         console.error('Error: ', error);
     })
-    // Changing the height of the body when the submit button is clicked. And changing the display of the footer from absolute to block
-    setTimeout(function() {
-        body.setAttribute('style', 'height: 100%;');
-        footerSection.setAttribute('style', 'background: #313131; color: #fff; display: block; padding: 20px 0; text-align: center;');
-    }, 500);
+
 }
 
 // A function to give the UV Index background a color depending on the reading
