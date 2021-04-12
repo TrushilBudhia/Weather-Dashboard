@@ -63,6 +63,6 @@ footerParagraphAnchor.setAttribute('href', 'https://trushilbudhia.github.io/Port
 footerParagraphAnchor.setAttribute('class', 'has-text-white');
 footerParagraph.textContent = '© Made by ';
 footerSection.setAttribute('class', 'bg-secondary p-4 text-center text-white w-100');
-footerSection.setAttribute('style', 'background: #313131; bottom: 0px; color: #fff; left: 0px; margin: 0 auto; padding: 20px 0; position: absolute; text-align: center; width: 100%;');
+footerSection.setAttribute('style', 'background: #313131; bottom: 0px; color: #fff; left: 0px; margin: 0 auto; padding: 20px 0; position: fixed; text-align: center; width: 100%;');
 footerParagraph.append(footerParagraphAnchor);
 footerSection.append(footerParagraph);

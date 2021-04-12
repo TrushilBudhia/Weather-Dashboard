@@ -218,14 +218,20 @@ function uvColor(uvIndexValue, uvInfo) {
 
 // Adding the city searched to the search history. A maximum of 5 cities to be displayed in the search history
 function addToSearchHistory(searchHistoryArray, searchHistoryCity) {
-    if(searchHistoryArray.length < 5) {
-        searchHistoryArray.push(searchHistoryCity);
-        renderSearchHistory();
+    if(searchHistoryArray.indexOf(searchHistoryCity) !== -1) {
+        searchInput.value = '';
     }
     else {
-        searchHistoryArray.shift();
-        searchHistoryArray.push(searchHistoryCity);
-        renderSearchHistory();
+        if(searchHistoryArray.length < 5) {
+            searchHistoryArray
+            searchHistoryArray.push(searchHistoryCity);
+            renderSearchHistory();
+        }
+        else {
+            searchHistoryArray.shift();
+            searchHistoryArray.push(searchHistoryCity);
+            renderSearchHistory();
+        }
     }
 }
 
