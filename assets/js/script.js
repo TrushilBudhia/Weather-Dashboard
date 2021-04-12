@@ -41,7 +41,7 @@ function getWeatherApi(event) {
     // FETCH request for today's weather data
     let todayWeatherRequestUrl = `https://api.openweathermap.org/data/2.5/weather?q=${inputValue}&appid=${weatherKey}&units=metric`;
     fetch(todayWeatherRequestUrl, {
-        cache: "reload",
+        cache: "default",
     })
     .then(response => response.json())
     .then(cityConditions => {
@@ -77,7 +77,7 @@ function getWeatherApi(event) {
         // FETCH request for the Open Weather Map One Call API data
         let oneCallApiRequestUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${currentLatitude}&lon=${currentLongitude}&exclude=${part}&appid=${weatherKey}&units=metric`;
         fetch(oneCallApiRequestUrl, {
-            cache: "reload",
+            cache: "default",
         })
         .then(response => response.json())
         .then(cityWeatherData => {
