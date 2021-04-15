@@ -45,8 +45,8 @@
     visibility: visible;
   }
 
-  /* Google Maps Autocomplete search styling */
-  .pac-icon {
+/* Google Maps Autocomplete search styling */
+.pac-icon {
     display: none;
 }
 
