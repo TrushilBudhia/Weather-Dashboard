@@ -5,6 +5,7 @@ const weatherKey = 'f7d89673838826a4c4b4d46f85f8dde7';
 // Functions
 function getWeatherApi(event) {
     event.preventDefault();
+
     // Verifying if autocomplete was used to generate the city string. If not, the input text is assigned to the inputValue variable
     let inputValue;
     if(nameOfCity) {
