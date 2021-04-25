@@ -34,10 +34,10 @@ The following image shows the web application's appearance:
 - JavaScript
 - HTML
 - CSS
-- Bulma (https://bulma.io/)
-- OpenWeather Weather API (https://openweathermap.org/current)
-- OpenWeather OneCall API (https://openweathermap.org/api/one-call-api)
-- Google Places API (https://developers.google.com/maps/documentation/places/web-service/overview)
+- [Bulma](https://bulma.io/)
+- [OpenWeather Weather API](https://openweathermap.org/current)
+- [OpenWeather OneCall API](https://openweathermap.org/api/one-call-api)
+- [Google Places API](https://developers.google.com/maps/documentation/places/web-service/overview)
 
 ## Contributing
 Contributions, issues and feature requests are welcome.
