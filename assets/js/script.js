@@ -4,9 +4,7 @@ const weatherKey = 'f7d89673838826a4c4b4d46f85f8dde7';
 
 // Functions
 function getWeatherApi(event) {
-    if(event){
-        event.preventDefault();
-    }
+    event.preventDefault();
     // Verifying if autocomplete was used to generate the city string. If not, the input text is assigned to the inputValue variable
     let inputValue;
     if(nameOfCity) {
@@ -242,8 +240,6 @@ function loadSearchHistory() {
     if (storedSearchHistory !== null) {
         searchHistoryArray = storedSearchHistory;
         renderSearchHistory();
-        searchInput.value = searchHistoryArray[4];
-        getWeatherApi();
     }
 }
 
