@@ -52,4 +52,4 @@ Feel free to check [issues page](https://github.com/TrushilBudhia/Weather-Dashbo
 ## License
 Copyright © 2021 [Trushil](https://github.com/TrushilBudhia)
 
-This project is [MIT](./LICENSE.md) licensed
+This project is [MIT](./LICENSE) licensed
